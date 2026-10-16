@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ides and tooling
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# antigravity & local cache
+.antigravity/
+.cache/
