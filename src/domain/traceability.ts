@@ -18,7 +18,8 @@ export interface TraceabilityEvent {
   metadata: Record<string, string>;
   visibilityCategory: SovereigntyPolicyKey;
   previousHash: string;
-  signatureHash: string;
+  hederaTransactionId: string;
+  hashscanUrl: string;
 }
 
 export interface AnimalRecord {
@@ -40,7 +41,8 @@ export interface SignEventPayload {
 }
 
 export interface SignApiResponse {
-  signatureHash: string;
+  transactionId: string;
+  hashscanUrl: string;
   timestamp: string;
   verified: boolean;
 }

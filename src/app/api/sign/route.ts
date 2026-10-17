@@ -1,37 +1,66 @@
 import { NextResponse } from 'next/server';
-import crypto from 'node:crypto';
+import { UI_TEXTS } from '@/domain/demoConfig';
 import { SignApiResponse } from '@/domain/traceability';
+import {
+  createHederaClient,
+  readTopicId,
+  submitMessageToTopic,
+} from '@/lib/hedera';
+import type { Client } from '@hashgraph/sdk';
 
 interface SignRequestBody {
   payload: unknown;
   previousHash: string;
 }
 
-export async function POST(request: Request): Promise<NextResponse<SignApiResponse | { error: string }>> {
+type ErrorResponse = { error: string };
+
+function isValidBody(body: Partial<SignRequestBody>): body is SignRequestBody {
+  return (
+    typeof body.payload === 'object' &&
+    body.payload !== null &&
+    typeof body.previousHash === 'string' &&
+    body.previousHash.trim() !== ''
+  );
+}
+
+export async function POST(
+  request: Request
+): Promise<NextResponse<SignApiResponse | ErrorResponse>> {
+  let body: Partial<SignRequestBody>;
+
   try {
-    const body = (await request.json()) as Partial<SignRequestBody>;
-    const { payload, previousHash } = body;
-
-    if (!payload || typeof previousHash !== 'string' || previousHash.trim() === '') {
-      return NextResponse.json(
-        { error: 'Invalid request: payload and previousHash are required.' },
-        { status: 400 }
-      );
-    }
-
-    const timestamp = new Date().toISOString();
-    const serializedData = `${previousHash}|${timestamp}|${JSON.stringify(payload)}`;
-    const signatureHash = crypto.createHash('sha256').update(serializedData).digest('hex');
-
-    return NextResponse.json({
-      signatureHash,
-      timestamp,
-      verified: true,
-    });
+    body = (await request.json()) as Partial<SignRequestBody>;
   } catch {
+    return NextResponse.json({ error: 'Request body must be valid JSON.' }, { status: 400 });
+  }
+
+  if (!isValidBody(body)) {
     return NextResponse.json(
-      { error: 'Internal server error while signing event.' },
-      { status: 500 }
+      { error: 'Invalid request: payload and previousHash are required.' },
+      { status: 400 }
     );
+  }
+
+  let client: Client | undefined;
+
+  try {
+    const topicId = readTopicId();
+    client = createHederaClient();
+
+    const message = JSON.stringify({
+      payload: body.payload,
+      previousHash: body.previousHash,
+      submittedAt: new Date().toISOString(),
+    });
+
+    const result = await submitMessageToTopic(client, topicId, message);
+
+    return NextResponse.json({ ...result, verified: true });
+  } catch (error) {
+    console.error('[api/sign] Hedera submission failed', error);
+    return NextResponse.json({ error: UI_TEXTS.hederaUnavailable }, { status: 503 });
+  } finally {
+    client?.close();
   }
 }
