@@ -110,7 +110,7 @@ export const VIEW_LABELS: Record<AppView, { title: string; navLabel: string }> =
 export const UI_TEXTS = {
   appName: 'Pypore',
   sovereignIdentity: 'Identidad Soberana Activa',
-  hashVerified: 'SHA-256 Verificado',
+  hashVerified: 'Hedera HCS Verificado',
   protectedData: 'Dato protegido por Soberanía del Productor',
   simulatorTitle: 'Simulador de Actor · Demo',
   producerOnlyTitle: 'Panel exclusivo del Productor',
@@ -119,6 +119,9 @@ export const UI_TEXTS = {
   submitLabel: 'Firmar y registrar evento',
   signedSuccess: 'Evento firmado y encadenado',
   signedError: 'No se pudo firmar el evento. Reintentá.',
+  hederaUnavailable:
+    'La red de Hedera está experimentando demoras. El evento no se registró todavía; tus datos siguen en el formulario para reintentar.',
+  dismissError: 'Cerrar aviso',
   sharingOn: 'Compartido',
   sharingOff: 'Protegido',
 };
@@ -154,7 +157,8 @@ export const SEED_ANIMAL_RECORD: AnimalRecord = {
       },
       visibilityCategory: 'shareGeneticData',
       previousHash: GENESIS_PREVIOUS_HASH,
-      signatureHash: '24869f67e80be323ffb3783c257759612fd62638ffb226b171fdf87b376da08e',
+      hederaTransactionId: '0.0.11003724-1792214697-886430608',
+      hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214697-886430608',
     },
     {
       id: 'evt-002-aftosa',
@@ -169,8 +173,9 @@ export const SEED_ANIMAL_RECORD: AnimalRecord = {
         'Certificado Acta': 'ACTA-SENASA-2024-8831',
       },
       visibilityCategory: 'shareSanitaryHistory',
-      previousHash: '24869f67e80be323ffb3783c257759612fd62638ffb226b171fdf87b376da08e',
-      signatureHash: '4866a0f764cb018e425784ab6068be47bf4ae26396a85831997631015f9c47a2',
+      previousHash: '0.0.11003724-1792214697-886430608',
+      hederaTransactionId: '0.0.11003724-1792214700-750845560',
+      hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214700-750845560',
     },
     {
       id: 'evt-003-pesaje',
@@ -184,8 +189,9 @@ export const SEED_ANIMAL_RECORD: AnimalRecord = {
         'Estado Corporal': '4/5',
       },
       visibilityCategory: 'shareWeightMetrics',
-      previousHash: '4866a0f764cb018e425784ab6068be47bf4ae26396a85831997631015f9c47a2',
-      signatureHash: '6c872fc3a9203aa232f4d5eea0e04b41e4eabf7fe85340c9d517feee7e9a491e',
+      previousHash: '0.0.11003724-1792214700-750845560',
+      hederaTransactionId: '0.0.11003724-1792214702-696914161',
+      hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214702-696914161',
     },
   ],
 };
