@@ -15,11 +15,21 @@ import {
   TraceabilityEvent,
   ViewerRole,
 } from '@/domain/traceability';
-import { GENESIS_PREVIOUS_HASH, SEED_ANIMAL_RECORD } from '@/domain/demoConfig';
+import { GENESIS_PREVIOUS_HASH, SEED_ANIMAL_RECORD, UI_TEXTS } from '@/domain/demoConfig';
+
+export class EventRegistrationError extends Error {
+  readonly status: number | null;
+
+  constructor(message: string, status: number | null) {
+    super(message);
+    this.name = 'EventRegistrationError';
+    this.status = status;
+  }
+}
 
 export type NewTraceabilityEventInput = Omit<
   TraceabilityEvent,
-  'id' | 'timestamp' | 'previousHash' | 'signatureHash'
+  'id' | 'timestamp' | 'previousHash' | 'hederaTransactionId' | 'hashscanUrl'
 >;
 
 interface TraceabilityContextValue {
@@ -100,31 +110,47 @@ export function TraceabilityProvider({
   const registerSignedEvent = useCallback(
     async (input: NewTraceabilityEventInput): Promise<TraceabilityEvent> => {
       const lastEvent = animalRecord.events[animalRecord.events.length - 1];
-      const previousHash = lastEvent ? lastEvent.signatureHash : GENESIS_PREVIOUS_HASH;
+      const previousHash = lastEvent ? lastEvent.hederaTransactionId : GENESIS_PREVIOUS_HASH;
 
-      const response = await fetch('/api/sign', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          payload: input,
-          previousHash,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to sign event: ${response.statusText}`);
+      let response: Response;
+      try {
+        response = await fetch('/api/sign', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            payload: input,
+            previousHash,
+          }),
+        });
+      } catch {
+        throw new EventRegistrationError(UI_TEXTS.hederaUnavailable, null);
       }
 
-      const { signatureHash, timestamp } = (await response.json()) as SignApiResponse;
+      if (!response.ok) {
+        const errorBody = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new EventRegistrationError(
+          errorBody?.error ?? UI_TEXTS.hederaUnavailable,
+          response.status
+        );
+      }
+
+      const { transactionId, hashscanUrl, timestamp, verified } = ((await response
+        .json()
+        .catch(() => null)) ?? {}) as Partial<SignApiResponse>;
+
+      if (!verified || !transactionId || !hashscanUrl || !timestamp) {
+        throw new EventRegistrationError(UI_TEXTS.hederaUnavailable, response.status);
+      }
 
       const newEvent: TraceabilityEvent = {
         id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         ...input,
         timestamp,
         previousHash,
-        signatureHash,
+        hederaTransactionId: transactionId,
+        hashscanUrl,
       };
 
       setAnimalRecord((prev) => ({

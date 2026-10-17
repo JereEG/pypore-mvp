@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2, Loader2, ShieldCheck, TriangleAlert } from 'lucide-react';
-import { useTraceability } from '@/context/TraceabilityContext';
+import { CheckCircle2, Loader2, ShieldCheck, TriangleAlert, X } from 'lucide-react';
+import { EventRegistrationError, useTraceability } from '@/context/TraceabilityContext';
 import {
   EVENT_FORM_FIELDS,
   EVENT_POLICY_CATEGORY,
@@ -11,8 +11,8 @@ import {
   UI_TEXTS,
   VIEW_LABELS,
 } from '@/domain/demoConfig';
-import { EventType } from '@/domain/traceability';
-import { truncateHash } from '@/lib/format';
+import { EventType, TraceabilityEvent } from '@/domain/traceability';
+import { HederaTransactionLink } from './HederaTransactionLink';
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -27,7 +27,8 @@ export function RegisterEventView() {
   const [title, setTitle] = useState('');
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<SubmitStatus>('idle');
-  const [lastHash, setLastHash] = useState('');
+  const [lastSignedEvent, setLastSignedEvent] = useState<TraceabilityEvent | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleTypeChange = (type: EventType) => {
     setEventType(type);
@@ -52,11 +53,14 @@ export function RegisterEventView() {
         metadata,
         visibilityCategory: EVENT_POLICY_CATEGORY[eventType],
       });
-      setLastHash(signedEvent.signatureHash);
+      setLastSignedEvent(signedEvent);
       setTitle('');
       setFieldValues({});
       setStatus('success');
-    } catch {
+    } catch (error) {
+      setErrorMessage(
+        error instanceof EventRegistrationError ? error.message : UI_TEXTS.signedError
+      );
       setStatus('error');
     }
   };
@@ -120,23 +124,36 @@ export function RegisterEventView() {
           {isLoading ? UI_TEXTS.signingLabel : UI_TEXTS.submitLabel}
         </button>
 
-        {status === 'success' && (
+        {status === 'success' && lastSignedEvent && (
           <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3">
             <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-700">
               <CheckCircle2 size={14} />
-              {UI_TEXTS.signedSuccess}
+              {UI_TEXTS.signedSuccess} · {UI_TEXTS.hashVerified}
             </p>
-            <p className="mt-1 break-all font-mono text-[11px] text-emerald-900">
-              {truncateHash(lastHash)}
-            </p>
+            <HederaTransactionLink
+              transactionId={lastSignedEvent.hederaTransactionId}
+              hashscanUrl={lastSignedEvent.hashscanUrl}
+              className="mt-1 break-all text-[11px]"
+            />
           </div>
         )}
 
         {status === 'error' && (
-          <p className="flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs font-bold text-amber-700">
-            <TriangleAlert size={14} />
-            {UI_TEXTS.signedError}
-          </p>
+          <div
+            role="alert"
+            className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800"
+          >
+            <TriangleAlert size={14} className="mt-0.5 shrink-0 text-red-600" />
+            <p className="flex-1 font-medium leading-relaxed">{errorMessage}</p>
+            <button
+              type="button"
+              aria-label={UI_TEXTS.dismissError}
+              onClick={() => setStatus('idle')}
+              className="shrink-0 rounded p-0.5 text-red-500 transition hover:bg-red-100"
+            >
+              <X size={14} />
+            </button>
+          </div>
         )}
       </form>
     </section>

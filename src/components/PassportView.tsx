@@ -3,7 +3,6 @@
 import {
   BadgeCheck,
   Baby,
-  Link2,
   LockKeyhole,
   LucideIcon,
   Scale,
@@ -14,6 +13,7 @@ import { useTraceability } from '@/context/TraceabilityContext';
 import { EVENT_TYPE_LABELS, UI_TEXTS, VIEW_LABELS } from '@/domain/demoConfig';
 import { EventType, TraceabilityEvent } from '@/domain/traceability';
 import { formatTechnicalDate, truncateHash } from '@/lib/format';
+import { HederaTransactionLink } from './HederaTransactionLink';
 
 const EVENT_ICONS: Record<EventType, LucideIcon> = {
   NACIMIENTO: Baby,
@@ -79,10 +79,13 @@ function TimelineEvent({ event, isLocked }: { event: TraceabilityEvent; isLocked
             <BadgeCheck size={12} />
             {UI_TEXTS.hashVerified}
           </span>
-          <p className="flex items-center gap-1.5 font-mono text-[11px] text-stone-600">
-            <Link2 size={11} className="shrink-0 text-emerald-600" />
-            {truncateHash(event.signatureHash)}
-          </p>
+          <div>
+            <HederaTransactionLink
+              transactionId={event.hederaTransactionId}
+              hashscanUrl={event.hashscanUrl}
+              className="text-[11px]"
+            />
+          </div>
           <p className="font-mono text-[10px] text-stone-400">
             prev: {truncateHash(event.previousHash)}
           </p>
