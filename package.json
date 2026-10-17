@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "hedera:create-topic": "node --env-file=.env.local -r ts-node/register src/scripts/createTopic.ts",
+    "hedera:seed": "node --env-file=.env.local -r ts-node/register src/scripts/seedHistoricalEvents.ts"
   },
   "dependencies": {
+    "@hashgraph/sdk": "^2.81.0",
     "lucide-react": "^1.58.0",
     "next": "16.4.2",
     "react": "19.3.0",
@@ -22,6 +25,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
