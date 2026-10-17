@@ -1,4 +1,4 @@
-# Identidad Soberana Ganadera - MVP
+# Pypore - Identidad Soberana Ganadera - MVP
 
 Plataforma de trazabilidad inmutable para ganado bovino, orientada al cumplimiento de la normativa europea **EUDR** (Reglamento de la UE sobre productos libres de deforestación). Cada hito del animal (nacimiento, vacunación, pesaje, traslado) se registra en **Hedera Consensus Service (HCS)**. El productor conserva la soberanía sobre sus datos y decide qué categorías comparte con SENASA y frigoríficos.
 
