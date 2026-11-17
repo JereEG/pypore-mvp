@@ -20,12 +20,15 @@ export interface TraceabilityEvent {
   previousHash: string;
   hederaTransactionId: string;
   hashscanUrl: string;
+  isOfflinePending?: boolean;
 }
 
 export interface AnimalRecord {
   caravanaId: string;
   renspa: string;
+  species?: string;
   breed: string;
+  categoryBadge?: string;
   birthDate: string;
   originLocation: string;
   ownerName: string;

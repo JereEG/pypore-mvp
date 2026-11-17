@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2, Loader2, ShieldCheck, TriangleAlert, X } from 'lucide-react';
+import { CheckCircle2, Clock3, Loader2, ShieldCheck, TriangleAlert, WifiOff, X } from 'lucide-react';
 import { EventRegistrationError, useTraceability } from '@/context/TraceabilityContext';
 import {
   EVENT_FORM_FIELDS,
@@ -22,13 +22,28 @@ const inputClassName =
   'w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20';
 
 export function RegisterEventView() {
-  const { registerSignedEvent } = useTraceability();
+  const { registerSignedEvent, registerOfflineFallbackEvent } = useTraceability();
   const [eventType, setEventType] = useState<EventType>('VACUNACION');
   const [title, setTitle] = useState('');
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [lastSignedEvent, setLastSignedEvent] = useState<TraceabilityEvent | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const buildEventInput = () => {
+    const metadata = Object.fromEntries(
+      EVENT_FORM_FIELDS[eventType]
+        .map((field) => [field, fieldValues[field]?.trim() ?? ''] as const)
+        .filter(([, value]) => value !== '')
+    );
+
+    return {
+      type: eventType,
+      title: title.trim(),
+      metadata,
+      visibilityCategory: EVENT_POLICY_CATEGORY[eventType],
+    };
+  };
 
   const handleTypeChange = (type: EventType) => {
     setEventType(type);
@@ -40,19 +55,8 @@ export function RegisterEventView() {
     submitEvent.preventDefault();
     setStatus('loading');
 
-    const metadata = Object.fromEntries(
-      EVENT_FORM_FIELDS[eventType]
-        .map((field) => [field, fieldValues[field]?.trim() ?? ''] as const)
-        .filter(([, value]) => value !== '')
-    );
-
     try {
-      const signedEvent = await registerSignedEvent({
-        type: eventType,
-        title: title.trim(),
-        metadata,
-        visibilityCategory: EVENT_POLICY_CATEGORY[eventType],
-      });
+      const signedEvent = await registerSignedEvent(buildEventInput());
       setLastSignedEvent(signedEvent);
       setTitle('');
       setFieldValues({});
@@ -63,6 +67,18 @@ export function RegisterEventView() {
       );
       setStatus('error');
     }
+  };
+
+  const handleOfflineFallback = async () => {
+    if (!title.trim()) {
+      return;
+    }
+    setStatus('loading');
+    const offlineEvent = await registerOfflineFallbackEvent(buildEventInput());
+    setLastSignedEvent(offlineEvent);
+    setTitle('');
+    setFieldValues({});
+    setStatus('success');
   };
 
   const isLoading = status === 'loading';
@@ -125,33 +141,63 @@ export function RegisterEventView() {
         </button>
 
         {status === 'success' && lastSignedEvent && (
-          <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3">
-            <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-700">
-              <CheckCircle2 size={14} />
-              {UI_TEXTS.signedSuccess} · {UI_TEXTS.hashVerified}
-            </p>
-            <HederaTransactionLink
-              transactionId={lastSignedEvent.hederaTransactionId}
-              hashscanUrl={lastSignedEvent.hashscanUrl}
-              className="mt-1 break-all text-[11px]"
-            />
+          <div
+            className={`rounded-lg border p-3 ${
+              lastSignedEvent.isOfflinePending
+                ? 'border-amber-300 bg-amber-50'
+                : 'border-emerald-300 bg-emerald-50'
+            }`}
+          >
+            {lastSignedEvent.isOfflinePending ? (
+              <>
+                <p className="flex items-center gap-1.5 text-xs font-bold text-amber-800">
+                  <Clock3 size={14} />
+                  {UI_TEXTS.signedOfflineSuccess}
+                </p>
+                <p className="mt-1 break-all font-mono text-[11px] text-amber-900">
+                  {lastSignedEvent.hederaTransactionId}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <CheckCircle2 size={14} />
+                  {UI_TEXTS.signedSuccess} · {UI_TEXTS.hashVerified}
+                </p>
+                <HederaTransactionLink
+                  transactionId={lastSignedEvent.hederaTransactionId}
+                  hashscanUrl={lastSignedEvent.hashscanUrl}
+                  className="mt-1 break-all text-[11px]"
+                />
+              </>
+            )}
           </div>
         )}
 
         {status === 'error' && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800"
+            className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800"
           >
-            <TriangleAlert size={14} className="mt-0.5 shrink-0 text-red-600" />
-            <p className="flex-1 font-medium leading-relaxed">{errorMessage}</p>
+            <div className="flex items-start gap-2">
+              <TriangleAlert size={14} className="mt-0.5 shrink-0 text-red-600" />
+              <p className="flex-1 font-medium leading-relaxed">{errorMessage}</p>
+              <button
+                type="button"
+                aria-label={UI_TEXTS.dismissError}
+                onClick={() => setStatus('idle')}
+                className="shrink-0 rounded p-0.5 text-red-500 transition hover:bg-red-100"
+              >
+                <X size={14} />
+              </button>
+            </div>
             <button
               type="button"
-              aria-label={UI_TEXTS.dismissError}
-              onClick={() => setStatus('idle')}
-              className="shrink-0 rounded p-0.5 text-red-500 transition hover:bg-red-100"
+              onClick={handleOfflineFallback}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-amber-400 bg-amber-100 px-3 py-2 text-xs font-bold text-amber-950 transition hover:bg-amber-200"
             >
-              <X size={14} />
+              <WifiOff size={14} />
+              {UI_TEXTS.offlineSubmitLabel}
             </button>
           </div>
         )}

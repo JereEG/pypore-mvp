@@ -1,9 +1,11 @@
 'use client';
 
-import { Eye } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, Eye } from 'lucide-react';
 import { useTraceability } from '@/context/TraceabilityContext';
 import { ROLE_CONFIGS, UI_TEXTS } from '@/domain/demoConfig';
 import { ViewerRole } from '@/domain/traceability';
+import { PyporeLogo } from './PyporeLogo';
 
 const ROLE_ORDER: ViewerRole[] = ['PRODUCER', 'AUDITOR_SENASA', 'FRIGORIFICO'];
 
@@ -12,9 +14,21 @@ export function RoleSimulatorBanner() {
 
   return (
     <div className="sticky top-0 z-30 bg-emerald-950 px-3 pt-2.5 pb-3 shadow-md">
-      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-amber-400">
-        <Eye size={12} />
-        {UI_TEXTS.simulatorTitle}
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <PyporeLogo size={24} className="shrink-0" />
+          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-amber-400">
+            <Eye size={12} />
+            {UI_TEXTS.simulatorTitle}
+          </div>
+        </div>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium text-emerald-200/80 transition hover:bg-emerald-900 hover:text-white"
+        >
+          <ArrowLeft size={12} />
+          Inicio
+        </Link>
       </div>
       <div role="tablist" className="grid grid-cols-3 gap-1 rounded-lg bg-emerald-900/60 p-1">
         {ROLE_ORDER.map((role) => {

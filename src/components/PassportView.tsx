@@ -3,6 +3,7 @@
 import {
   BadgeCheck,
   Baby,
+  Clock3,
   LockKeyhole,
   LucideIcon,
   Scale,
@@ -75,17 +76,31 @@ function TimelineEvent({ event, isLocked }: { event: TraceabilityEvent; isLocked
         )}
 
         <footer className="mt-3 space-y-1.5 border-t border-stone-100 pt-2.5">
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-            <BadgeCheck size={12} />
-            {UI_TEXTS.hashVerified}
-          </span>
-          <div>
-            <HederaTransactionLink
-              transactionId={event.hederaTransactionId}
-              hashscanUrl={event.hashscanUrl}
-              className="text-[11px]"
-            />
-          </div>
+          {event.isOfflinePending ? (
+            <>
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                <Clock3 size={12} />
+                {UI_TEXTS.offlineQueued}
+              </span>
+              <p className="font-mono text-[11px] text-amber-800">
+                sha256: {truncateHash(event.hederaTransactionId)}
+              </p>
+            </>
+          ) : (
+            <>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                <BadgeCheck size={12} />
+                {UI_TEXTS.hashVerified}
+              </span>
+              <div>
+                <HederaTransactionLink
+                  transactionId={event.hederaTransactionId}
+                  hashscanUrl={event.hashscanUrl}
+                  className="text-[11px]"
+                />
+              </div>
+            </>
+          )}
           <p className="font-mono text-[10px] text-stone-400">
             prev: {truncateHash(event.previousHash)}
           </p>

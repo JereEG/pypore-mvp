@@ -50,4 +50,8 @@ next-env.d.ts
 # antigravity & local cache
 .antigravity/
 .cache/ 
-!.env.example 
+!.env.example
+
+# local windows launchers
+*.exe
+*.lnk
