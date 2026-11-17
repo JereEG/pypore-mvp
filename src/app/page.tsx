@@ -6,6 +6,7 @@ import {
   BarChart3,
   Bot,
   Compass,
+  Database,
   DollarSign,
   ExternalLink,
   FileCheck2,
@@ -68,8 +69,8 @@ const BUFFALO_ADVANTAGES = [
 const CAPITAL_METRICS = [
   {
     metric: '$0.0001 USD',
-    label: 'Costo fijo por firma en Hedera HCS',
-    detail: 'Tarifas predecibles sin volatilidad de gas ni cuellos de botella.',
+    label: 'Costo fijo por anclaje en Hedera HCS',
+    detail: 'Solo sellamos pruebas criptográficas en Hedera; la operación diaria corre en DB tradicional.',
     icon: DollarSign,
   },
   {
@@ -89,6 +90,23 @@ const CAPITAL_METRICS = [
     label: 'SaaS Establecimiento + Fee Frigorífico',
     detail: 'Doble motor de ingresos: abono por campo y auditoría instantánea por lote exportado.',
     icon: BarChart3,
+  },
+];
+
+const HYBRID_ARCHITECTURE = [
+  {
+    layer: 'Capa Operativa & Privada',
+    title: 'Base de Datos Tradicional de Alta Velocidad',
+    description:
+      'Almacena la operación diaria del establecimiento, métricas comerciales privadas, cola de sincronización offline en el corral y reglas de visibilidad por rol. Consultas instantáneas sin exponer secretos del productor en una red pública.',
+    icon: Database,
+  },
+  {
+    layer: 'Fuente de Verdad Inmutable',
+    title: 'Hedera Consensus Service (HCS)',
+    description:
+      'Ancla el hash criptográfico, las firmas del productor y veterinario y el timestamp público verificable de cada hito. Garantiza matemáticamente que ningún registro de la base operativa fue alterado retroactivamente.',
+    icon: ShieldCheck,
   },
 ];
 
@@ -523,6 +541,31 @@ export default function LandingPage() {
                       <p className="mt-1.5 text-xs leading-relaxed text-emerald-100/75">
                         {item.detail}
                       </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 grid gap-5 border-t border-emerald-800/80 pt-6 md:grid-cols-2">
+                {HYBRID_ARCHITECTURE.map((arch) => {
+                  const Icon = arch.icon;
+                  return (
+                    <div
+                      key={arch.title}
+                      className="flex items-start gap-4 rounded-xl border border-emerald-700/60 bg-emerald-950/60 p-5"
+                    >
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600/20 text-emerald-300 ring-1 ring-emerald-500/40">
+                        <Icon size={20} />
+                      </span>
+                      <div>
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                          {arch.layer}
+                        </span>
+                        <h4 className="mt-1 text-sm font-bold text-white">{arch.title}</h4>
+                        <p className="mt-1.5 text-xs leading-relaxed text-emerald-100/80">
+                          {arch.description}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}

@@ -1,18 +1,28 @@
 # Pypore - Identidad Soberana Ganadera - MVP
 
-Plataforma de trazabilidad inmutable para ganado bovino, orientada al cumplimiento de la normativa europea **EUDR** (Reglamento de la UE sobre productos libres de deforestación). Cada hito del animal (nacimiento, vacunación, pesaje, traslado) se registra en **Hedera Consensus Service (HCS)**. El productor conserva la soberanía sobre sus datos y decide qué categorías comparte con SENASA y frigoríficos.
+Plataforma de trazabilidad inmutable para ganado (**punta de lanza en rodeo bubalino del NEA** con escalamiento a ganado bovino), orientada al cumplimiento de la normativa europea **EUDR** (Reglamento de la UE sobre productos libres de deforestación). Cada hito del animal (nacimiento, vacunación, pesaje, traslado) se ancla en **Hedera Consensus Service (HCS)** como fuente de verdad inmutable mientras el productor conserva la soberanía sobre sus datos frente a SENASA y frigoríficos.
 
 ## Declaración de Originalidad
 
-Este proyecto fue desarrollado desde cero durante el **Ideathon NEA TECH 2026** (Track Hedera).
+Este proyecto fue desarrollado desde cero durante el **Ideathon NEA TECH 2026** (1° Puesto Track Hedera).
+
+## Arquitectura Híbrida: DB Tradicional + Fuente de Verdad en Hedera
+
+El diseño de producción de Pyporé combina dos capas complementarias:
+
+1. **Base de Datos Tradicional (Capa Operativa y Privada):** Almacenamiento relacional de establecimientos, rodeos, métricas comerciales sensibles, políticas de soberanía del productor y cola de sincronización offline para operación sin conectividad en el corral. Garantiza consultas instantáneas, generación de guías/certificados imprimibles y resguardo de la privacidad comercial fuera de cadena pública.
+2. **Hedera Consensus Service — HCS (Fuente de Verdad Inmutable):** Anclaje criptográfico de hashes SHA-256 encadenados (`previousHash`), firmas verificables (Triple Firma) y sellado temporal de consenso a costo fijo predecible (`$0.0001 USD` por mensaje). Permite auditar matemáticamente que ningún registro almacenado en la DB tradicional fue alterado retroactivamente.
 
 ## Funcionalidades
 
-- **Pasaporte y trazabilidad:** línea de tiempo del animal. Cada evento enlaza a su transacción en Hashscan.
-- **Soberanía de datos:** el productor activa o desactiva en vivo qué categorías comparte (historial sanitario, métricas de peso, ubicación exacta, datos genéticos).
-- **Simulador de actores:** alterna entre Productor, Auditor SENASA y Frigorífico. Los datos no autorizados se muestran protegidos.
-- **Registro de eventos:** cada hito nuevo se publica en HCS y se encadena con el ID de transacción del evento anterior.
-- **Degradación controlada:** si la red no responde, la API devuelve un `503` con un mensaje controlado y la interfaz sigue operativa.
+- **Landing Institucional (`/`):** Propuesta de valor, estrategia beachhead en el Búfalo de Agua (humedales libres de deforestación), tesis de inversión, arquitectura híbrida, historia, valores y convocatoria.
+- **Demo Interactiva (`/demo`):**
+  - **Selector de Rodeo:** Alterna en vivo entre **Búfalo Mediterráneo (`AR-05-BUF-0108`, Punta de Lanza)** y **Bovino Braford (`AR-05-8842-A`)**.
+  - **Pasaporte y Trazabilidad:** Línea de tiempo del ejemplar con enlaces verificables a Hashscan.
+  - **Control Instantáneo por QR & Guía DTA:** Modal nativo imprimible para auditoría en ruta, Prefectura y frigoríficos.
+  - **Soberanía de Datos:** El productor activa o desactiva en vivo qué categorías comparte (historial sanitario, métricas de peso, ubicación exacta, datos genéticos).
+  - **Simulador de Actores:** Alterna entre Productor, Auditor SENASA y Frigorífico; los datos no autorizados se muestran protegidos.
+  - **Registro de Eventos & Cola Offline:** Publica hitos en HCS encadenados al `previousHash` anterior y ofrece registro local SHA-256 en modo contingencia offline ante falta de conectividad.
 
 ## Stack Tecnológico
 
