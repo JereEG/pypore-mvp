@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pypore · Trazabilidad Ganadera Soberana",
-  description: "Pasaporte digital de ganado con firma criptográfica y soberanía de datos del productor.",
+  title: "Pyporé · Trazabilidad Ganadera Soberana",
+  description: "Pasaporte digital ganadero con soberanía de datos y sellado inmutable en Hedera Consensus Service. Punta de lanza en producción bubalina.",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
