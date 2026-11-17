@@ -161,6 +161,61 @@ const CORE_VALUES = [
   },
 ];
 
+interface TeamMember {
+  name: string;
+  role: string;
+  badge: string;
+  description: string;
+  icon: typeof UserCheck;
+  linkedinUrl?: string;
+}
+
+const TEAM_MEMBERS: TeamMember[] = [
+  {
+    name: 'Jeremías Ezequiel González',
+    role: 'Fundador & Lead Software Engineer',
+    badge: 'FaCENA · UNNE',
+    description:
+      'Estudiante avanzado de Licenciatura en Sistemas de Información (FaCENA - UNNE). Arquitectura Full Stack e integración Web3 en Hedera.',
+    icon: UserCheck,
+  },
+  {
+    name: 'Belén García Moyanesi',
+    role: 'Project Management & Análisis Funcional',
+    badge: 'UTN FRRe · ICCTI',
+    description:
+      'Estudiante avanzada de Ingeniería en Sistemas (UTN FRRe), Project Manager en ICCTI y Coach Ontológico organizacional. Experiencia en análisis funcional y representación en IEEE Argentina.',
+    linkedinUrl: 'https://www.linkedin.com/in/belenmoyanesi',
+    icon: UserCheck,
+  },
+  {
+    name: 'Facundo Matías Cubells Romero',
+    role: 'Agentes de IA & Automatización de Procesos',
+    badge: 'UTN FRRe · ClickArg',
+    description:
+      'Formación en Ingeniería en Sistemas (UTN FRRe), fundador de ClickArg y voluntario en IEEE y Rotary. Especialista en rediseño de flujos, agentes de IA y escalamiento comercial.',
+    linkedinUrl: 'https://www.linkedin.com/in/facundo-cubells',
+    icon: UserCheck,
+  },
+  {
+    name: 'Luciana Belén Canteros',
+    role: 'Ciencia de Datos & Modelos de IA (LLMs)',
+    badge: 'FaCENA · UNNE',
+    description:
+      'Analista Programadora Universitaria y Diplomada en Ciencia de Datos (UNNE). Data Scientist en SEGEM con experiencia en Python, LLMs e investigación presentada en las 55° JAIIO (SADIO).',
+    linkedinUrl: 'https://www.linkedin.com/in/luciana-belen-canteros-729513318',
+    icon: UserCheck,
+  },
+  {
+    name: 'Gemini / Argon (IA Agéntica)',
+    role: 'Co-piloto de Arquitectura, Investigación y Producto',
+    badge: 'IA Agéntica',
+    description:
+      'Asistencia continua en contraste lógico, diseño de sistemas y validación de procesos.',
+    icon: Bot,
+  },
+];
+
 function TickCounterArtwork() {
   return (
     <svg viewBox="0 0 400 225" className="h-full w-full" aria-hidden="true">
@@ -779,50 +834,48 @@ export default function LandingPage() {
               </h2>
             </div>
 
-            <div className="mt-8 grid gap-6 lg:grid-cols-3">
-              <article className="flex flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-6 shadow-lg">
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
-                      <UserCheck size={22} />
-                    </span>
-                    <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
-                      FaCENA · UNNE
-                    </span>
-                  </div>
-                  <h3 className="mt-4 text-lg font-bold text-white">Jeremías Ezequiel González</h3>
-                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
-                    Fundador &amp; Lead Software Engineer
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-emerald-100/80">
-                    Estudiante avanzado de Licenciatura en Sistemas de Información (FaCENA - UNNE).
-                    Arquitectura Full Stack e integración Web3 en Hedera.
-                  </p>
-                </div>
-              </article>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {TEAM_MEMBERS.map((member) => {
+                const Icon = member.icon;
+                return (
+                  <article
+                    key={member.name}
+                    className="flex flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-6 shadow-lg"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
+                          <Icon size={22} />
+                        </span>
+                        <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
+                          {member.badge}
+                        </span>
+                      </div>
+                      <h3 className="mt-4 text-lg font-bold text-white">{member.name}</h3>
+                      <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                        {member.role}
+                      </p>
+                      <p className="mt-3 text-sm leading-relaxed text-emerald-100/80">
+                        {member.description}
+                      </p>
+                    </div>
 
-              <article className="flex flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-6 shadow-lg">
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
-                      <Bot size={22} />
-                    </span>
-                    <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
-                      IA Agéntica
-                    </span>
-                  </div>
-                  <h3 className="mt-4 text-lg font-bold text-white">
-                    Gemini / Argon (IA Agéntica)
-                  </h3>
-                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
-                    Co-piloto de Arquitectura, Investigación y Producto
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-emerald-100/80">
-                    Asistencia continua en contraste lógico, diseño de sistemas y validación de
-                    procesos.
-                  </p>
-                </div>
-              </article>
+                    {member.linkedinUrl && (
+                      <div className="mt-5 border-t border-emerald-800/70 pt-3">
+                        <a
+                          href={member.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 transition hover:text-white"
+                        >
+                          <span>Perfil de LinkedIn</span>
+                          <ExternalLink size={12} />
+                        </a>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
 
               <article className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-amber-400/60 bg-emerald-900/20 p-6 shadow-lg transition hover:border-amber-400 hover:bg-emerald-900/40">
                 <div>
