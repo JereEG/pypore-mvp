@@ -68,7 +68,7 @@ export const SOVEREIGNTY_POLICY_CONFIGS: Record<SovereigntyPolicyKey, PolicyDesc
   shareGeneticData: {
     key: 'shareGeneticData',
     label: 'Datos Genéticos',
-    description: 'Genealogía, padre/madre registrados y pedigree de raza Braford.',
+    description: 'Genealogía, padre/madre registrados y pedigree certificado del ejemplar.',
     impact: 'Resguarda tu inversión genética: padres, madres y pedigree quedan fuera del alcance de terceros.',
   },
 };
@@ -108,19 +108,22 @@ export const VIEW_LABELS: Record<AppView, { title: string; navLabel: string }> =
 };
 
 export const UI_TEXTS = {
-  appName: 'Pypore',
+  appName: 'Pyporé',
   sovereignIdentity: 'Identidad Soberana Activa',
   hashVerified: 'Hedera HCS Verificado',
+  offlineQueued: 'Cola Criptográfica Offline (Pendiente Sync)',
   protectedData: 'Dato protegido por Soberanía del Productor',
   simulatorTitle: 'Simulador de Actor · Demo',
   producerOnlyTitle: 'Panel exclusivo del Productor',
   producerOnlyBody: 'Cambiá al rol Productor (Dueño) para administrar qué datos se comparten con terceros.',
   signingLabel: 'Firmando en servidor…',
   submitLabel: 'Firmar y registrar evento',
+  offlineSubmitLabel: 'Registrar en Cola Offline Criptográfica (Modo Potrero)',
   signedSuccess: 'Evento firmado y encadenado',
+  signedOfflineSuccess: 'Evento encadenado en modo offline (listo para sincronizar con Hedera)',
   signedError: 'No se pudo firmar el evento. Reintentá.',
   hederaUnavailable:
-    'La red de Hedera está experimentando demoras. El evento no se registró todavía; tus datos siguen en el formulario para reintentar.',
+    'La red de Hedera está experimentando demoras o estás sin señal. Tus datos siguen en el formulario: podés reintentar o guardar en la Cola Criptográfica Offline.',
   dismissError: 'Cerrar aviso',
   sharingOn: 'Compartido',
   sharingOff: 'Protegido',
@@ -129,10 +132,81 @@ export const UI_TEXTS = {
 export const GENESIS_PREVIOUS_HASH =
   '0000000000000000000000000000000000000000000000000000000000000000';
 
-export const SEED_ANIMAL_RECORD: AnimalRecord = {
+export const BUFFALO_SEED_RECORD: AnimalRecord = {
+  caravanaId: 'AR-05-BUF-0108',
+  renspa: '04.015.0.08842/01',
+  species: 'Bubalus bubalis (Búfalo)',
+  breed: 'Búfalo Mediterráneo · Humedal',
+  categoryBadge: 'Punta de Lanza · Rodeo Bubalino NEA',
+  birthDate: '2024-08-18',
+  originLocation: 'Esteros del Iberá / Ituzaingó, Corrientes',
+  ownerName: 'Cabaña Bubalina Iberá - Consorcio del Humedal',
+  sovereigntyPolicy: {
+    shareSanitaryHistory: true,
+    shareWeightMetrics: true,
+    shareExactLocation: false,
+    shareGeneticData: false,
+  },
+  events: [
+    {
+      id: 'evt-buf-001',
+      timestamp: '2024-08-18T07:45:00.000Z',
+      type: 'NACIMIENTO',
+      title: 'Nacimiento en Humedal Natural y Caravaneo Electrónico',
+      metadata: {
+        'Potrero': 'Esteros Norte - Cero Deforestación (EUDR)',
+        'Peso al Nacer': '39 kg',
+        'Padre': 'Toro Mediterráneo Gran Campeón Corrientes',
+        'Madre': 'Búfala Lechera A2 RP 104',
+        'Especie': 'Bubalus bubalis (Búfalo de Agua)',
+      },
+      visibilityCategory: 'shareGeneticData',
+      previousHash: GENESIS_PREVIOUS_HASH,
+      hederaTransactionId: '0.0.11003724-1792214697-886430608',
+      hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214697-886430608',
+    },
+    {
+      id: 'evt-buf-002',
+      timestamp: '2024-11-12T09:30:00.000Z',
+      type: 'VACUNACION',
+      title: 'Certificación Sanitaria Bubalina & Triple Firma SENASA',
+      metadata: {
+        'Vacuna': 'Aftosa + Brucelosis Oficial',
+        'Dosis': '2 ml subcutánea',
+        'Veterinario Matrícula': 'MP-CTES 1492',
+        'Resistencia Ectoparásitos': 'Natural (Baja carga de garrapata)',
+        'Certificado Acta': 'ACTA-SENASA-BUF-8831',
+      },
+      visibilityCategory: 'shareSanitaryHistory',
+      previousHash: '0.0.11003724-1792214697-886430608',
+      hederaTransactionId: '0.0.11003724-1792214700-750845560',
+      hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214700-750845560',
+    },
+    {
+      id: 'evt-buf-003',
+      timestamp: '2025-03-15T15:10:00.000Z',
+      type: 'PESAJE',
+      title: 'Pesaje de Recría en Pastizal Natural (Cuota Exportación)',
+      metadata: {
+        'Peso Bruto': '248 kg',
+        'Ganancia Diaria': '1.120 kg/día',
+        'Balanza': 'Báscula Digital Tru-Test S3',
+        'Aptitud Comercial': 'Carne Premium Magra / Cuero Trazado',
+      },
+      visibilityCategory: 'shareWeightMetrics',
+      previousHash: '0.0.11003724-1792214700-750845560',
+      hederaTransactionId: '0.0.11003724-1792214702-696914161',
+      hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214702-696914161',
+    },
+  ],
+};
+
+export const BOVINE_SEED_RECORD: AnimalRecord = {
   caravanaId: 'AR-05-8842-A',
   renspa: '04.022.0.01234/00',
+  species: 'Bos taurus / indicus (Bovino)',
   breed: 'Braford',
+  categoryBadge: 'Escalamiento · Rodeo Bovino Litoral',
   birthDate: '2024-09-12',
   originLocation: 'Mercedes, Corrientes',
   ownerName: 'Establecimiento El Rocío - Ganadera del Litoral',
@@ -195,3 +269,10 @@ export const SEED_ANIMAL_RECORD: AnimalRecord = {
     },
   ],
 };
+
+export const SEED_ANIMAL_RECORD: AnimalRecord = BUFFALO_SEED_RECORD;
+
+export const DEMO_ANIMAL_RECORDS: AnimalRecord[] = [
+  BUFFALO_SEED_RECORD,
+  BOVINE_SEED_RECORD,
+];
