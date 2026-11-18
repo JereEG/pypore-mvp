@@ -112,6 +112,13 @@ export const UI_TEXTS = {
   sovereignIdentity: 'Identidad Soberana Activa',
   hashVerified: 'Hedera HCS Verificado',
   offlineQueued: 'Cola Criptográfica Offline (Pendiente Sync)',
+  hybridDbActive: 'DB Operativa Local · Verdad en Hedera HCS',
+  offlineModeLabel: 'Modo Potrero (Sin Señal)',
+  offlineModeDescription:
+    'Guarda hitos en la base local con firma SHA-256 para sincronizar cuando vuelva la conectividad.',
+  syncNowLabel: 'Sincronizar con Hedera HCS',
+  syncingLabel: 'Sincronizando con Hedera…',
+  resetDemoLabel: 'Restablecer demo',
   protectedData: 'Dato protegido por Soberanía del Productor',
   simulatorTitle: 'Simulador de Actor · Demo',
   producerOnlyTitle: 'Panel exclusivo del Productor',
@@ -164,6 +171,10 @@ export const BUFFALO_SEED_RECORD: AnimalRecord = {
       previousHash: GENESIS_PREVIOUS_HASH,
       hederaTransactionId: '0.0.11003724-1792214697-886430608',
       hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214697-886430608',
+      signatures: {
+        producer: 'Cabaña Bubalina Iberá',
+        authority: 'Caravana Oficial SENASA',
+      },
     },
     {
       id: 'evt-buf-002',
@@ -181,6 +192,11 @@ export const BUFFALO_SEED_RECORD: AnimalRecord = {
       previousHash: '0.0.11003724-1792214697-886430608',
       hederaTransactionId: '0.0.11003724-1792214700-750845560',
       hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214700-750845560',
+      signatures: {
+        producer: 'Cabaña Bubalina Iberá',
+        veterinarian: 'Vet. MP-CTES 1492',
+        authority: 'SENASA Validado',
+      },
     },
     {
       id: 'evt-buf-003',
@@ -197,6 +213,11 @@ export const BUFFALO_SEED_RECORD: AnimalRecord = {
       previousHash: '0.0.11003724-1792214700-750845560',
       hederaTransactionId: '0.0.11003724-1792214702-696914161',
       hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214702-696914161',
+      signatures: {
+        producer: 'Cabaña Bubalina Iberá',
+        veterinarian: 'Control Balanza Digital',
+        authority: 'Habilitación EUDR',
+      },
     },
   ],
 };
@@ -233,6 +254,10 @@ export const BOVINE_SEED_RECORD: AnimalRecord = {
       previousHash: GENESIS_PREVIOUS_HASH,
       hederaTransactionId: '0.0.11003724-1792214697-886430608',
       hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214697-886430608',
+      signatures: {
+        producer: 'Establecimiento El Rocío',
+        authority: 'Caravana Oficial SENASA',
+      },
     },
     {
       id: 'evt-002-aftosa',
@@ -250,6 +275,11 @@ export const BOVINE_SEED_RECORD: AnimalRecord = {
       previousHash: '0.0.11003724-1792214697-886430608',
       hederaTransactionId: '0.0.11003724-1792214700-750845560',
       hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214700-750845560',
+      signatures: {
+        producer: 'Establecimiento El Rocío',
+        veterinarian: 'Vet. MP-CTES 1492',
+        authority: 'SENASA Validado',
+      },
     },
     {
       id: 'evt-003-pesaje',
@@ -266,6 +296,11 @@ export const BOVINE_SEED_RECORD: AnimalRecord = {
       previousHash: '0.0.11003724-1792214700-750845560',
       hederaTransactionId: '0.0.11003724-1792214702-696914161',
       hashscanUrl: 'https://hashscan.io/testnet/transaction/0.0.11003724-1792214702-696914161',
+      signatures: {
+        producer: 'Establecimiento El Rocío',
+        veterinarian: 'Control Balanza Digital',
+        authority: 'Apto Cuota Exportación',
+      },
     },
   ],
 };

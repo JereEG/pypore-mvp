@@ -13,7 +13,7 @@ export function RoleSimulatorBanner() {
   const { currentRole, setCurrentRole } = useTraceability();
 
   return (
-    <div className="sticky top-0 z-30 bg-emerald-950 px-3 pt-2.5 pb-3 shadow-md">
+    <div className="print:hidden sticky top-0 z-30 bg-emerald-950 px-3 pt-2.5 pb-3 shadow-md">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <PyporeLogo size={24} className="shrink-0" />

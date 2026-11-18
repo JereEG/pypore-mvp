@@ -4,7 +4,9 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -13,6 +15,7 @@ import {
   SovereigntyPolicy,
   SovereigntyPolicyKey,
   TraceabilityEvent,
+  TripleSignature,
   ViewerRole,
 } from '@/domain/traceability';
 import {
@@ -20,6 +23,8 @@ import {
   GENESIS_PREVIOUS_HASH,
   UI_TEXTS,
 } from '@/domain/demoConfig';
+
+const OPERATIONAL_DB_KEY = 'pypore_operational_db_v1';
 
 export class EventRegistrationError extends Error {
   readonly status: number | null;
@@ -36,17 +41,28 @@ export type NewTraceabilityEventInput = Omit<
   'id' | 'timestamp' | 'previousHash' | 'hederaTransactionId' | 'hashscanUrl' | 'isOfflinePending'
 >;
 
+export interface SyncResult {
+  synced: number;
+  failed: number;
+}
+
 interface TraceabilityContextValue {
   animalRecord: AnimalRecord;
   availableAnimals: AnimalRecord[];
   selectAnimal: (caravanaId: string) => void;
   currentRole: ViewerRole;
   setCurrentRole: (role: ViewerRole) => void;
+  isOfflineFieldMode: boolean;
+  toggleOfflineFieldMode: () => void;
+  pendingOfflineCount: number;
+  isDemoModified: boolean;
   updateSovereigntyPolicy: (key: SovereigntyPolicyKey, value: boolean) => void;
   toggleSovereigntyPolicy: (key: SovereigntyPolicyKey) => void;
   setSovereigntyPolicy: (policy: SovereigntyPolicy) => void;
   registerSignedEvent: (input: NewTraceabilityEventInput) => Promise<TraceabilityEvent>;
   registerOfflineFallbackEvent: (input: NewTraceabilityEventInput) => Promise<TraceabilityEvent>;
+  syncOfflineEvents: () => Promise<SyncResult>;
+  resetDemoData: () => void;
   isEventVisible: (event: TraceabilityEvent) => boolean;
   visibleEvents: TraceabilityEvent[];
 }
@@ -80,6 +96,44 @@ function buildInitialRecords(initialRecord?: AnimalRecord): Record<string, Anima
   return records;
 }
 
+function buildEventSignatures(
+  ownerName: string,
+  metadata: Record<string, string>,
+  isOnline: boolean
+): TripleSignature {
+  const producer = ownerName.split(' - ')[0] || ownerName;
+  const vetMatricula = metadata['Veterinario Matrícula'];
+  return {
+    producer,
+    ...(vetMatricula ? { veterinarian: `Vet. ${vetMatricula}` } : {}),
+    ...(isOnline ? { authority: 'Validado Hedera HCS' } : {}),
+  };
+}
+
+function readStoredRecords(
+  fallback: Record<string, AnimalRecord>
+): Record<string, AnimalRecord> | null {
+  try {
+    const raw = window.localStorage.getItem(OPERATIONAL_DB_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw) as Record<string, AnimalRecord>;
+    if (!parsed || typeof parsed !== 'object') {
+      return null;
+    }
+    const merged: Record<string, AnimalRecord> = { ...fallback };
+    for (const [caravanaId, record] of Object.entries(parsed)) {
+      if (record && typeof record.caravanaId === 'string' && Array.isArray(record.events)) {
+        merged[caravanaId] = record;
+      }
+    }
+    return merged;
+  } catch {
+    return null;
+  }
+}
+
 export function TraceabilityProvider({
   children,
   initialRecord,
@@ -87,13 +141,45 @@ export function TraceabilityProvider({
   children: React.ReactNode;
   initialRecord?: AnimalRecord;
 }) {
-  const [recordsByCaravana, setRecordsByCaravana] = useState<Record<string, AnimalRecord>>(() =>
-    buildInitialRecords(initialRecord)
-  );
+  const defaultRecords = useMemo(() => buildInitialRecords(initialRecord), [initialRecord]);
+  const [recordsByCaravana, setRecordsByCaravana] =
+    useState<Record<string, AnimalRecord>>(defaultRecords);
   const [selectedCaravanaId, setSelectedCaravanaId] = useState<string>(
     () => initialRecord?.caravanaId ?? DEMO_ANIMAL_RECORDS[0].caravanaId
   );
   const [currentRole, setCurrentRole] = useState<ViewerRole>('PRODUCER');
+  const [isOfflineFieldMode, setIsOfflineFieldMode] = useState(false);
+
+  const recordsRef = useRef(recordsByCaravana);
+  const persistAllowedRef = useRef(false);
+
+  useEffect(() => {
+    recordsRef.current = recordsByCaravana;
+  }, [recordsByCaravana]);
+
+  useEffect(() => {
+    if (initialRecord) {
+      persistAllowedRef.current = true;
+      return;
+    }
+    const stored = readStoredRecords(defaultRecords);
+    persistAllowedRef.current = true;
+    if (stored) {
+      Promise.resolve().then(() => {
+        setRecordsByCaravana(stored);
+      });
+    }
+  }, [defaultRecords, initialRecord]);
+
+  useEffect(() => {
+    if (!persistAllowedRef.current || initialRecord) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(OPERATIONAL_DB_KEY, JSON.stringify(recordsByCaravana));
+    } catch {
+    }
+  }, [recordsByCaravana, initialRecord]);
 
   const availableAnimals = useMemo(
     () => Object.values(recordsByCaravana),
@@ -105,12 +191,26 @@ export function TraceabilityProvider({
     [recordsByCaravana, selectedCaravanaId, availableAnimals]
   );
 
+  const pendingOfflineCount = useMemo(
+    () => animalRecord.events.filter((event) => Boolean(event.isOfflinePending)).length,
+    [animalRecord.events]
+  );
+
+  const isDemoModified = useMemo(
+    () => JSON.stringify(recordsByCaravana) !== JSON.stringify(defaultRecords),
+    [recordsByCaravana, defaultRecords]
+  );
+
   const selectAnimal = useCallback(
     (caravanaId: string) => {
       setSelectedCaravanaId((prev) => (recordsByCaravana[caravanaId] ? caravanaId : prev));
     },
     [recordsByCaravana]
   );
+
+  const toggleOfflineFieldMode = useCallback(() => {
+    setIsOfflineFieldMode((prev) => !prev);
+  }, []);
 
   const updateSovereigntyPolicy = useCallback(
     (key: SovereigntyPolicyKey, value: boolean) => {
@@ -257,13 +357,15 @@ export function TraceabilityProvider({
         previousHash,
         hederaTransactionId: transactionId,
         hashscanUrl,
+        signatures:
+          input.signatures ?? buildEventSignatures(animalRecord.ownerName, input.metadata, true),
       };
 
       appendEventToActiveAnimal(targetCaravana, newEvent);
 
       return newEvent;
     },
-    [animalRecord.caravanaId, animalRecord.events, appendEventToActiveAnimal]
+    [animalRecord.caravanaId, animalRecord.events, animalRecord.ownerName, appendEventToActiveAnimal]
   );
 
   const registerOfflineFallbackEvent = useCallback(
@@ -284,14 +386,123 @@ export function TraceabilityProvider({
         hederaTransactionId: `offline-sha256-${digest.slice(0, 16)}`,
         hashscanUrl: '',
         isOfflinePending: true,
+        signatures:
+          input.signatures ?? buildEventSignatures(animalRecord.ownerName, input.metadata, false),
       };
 
       appendEventToActiveAnimal(targetCaravana, newEvent);
 
       return newEvent;
     },
-    [animalRecord.caravanaId, animalRecord.events, appendEventToActiveAnimal]
+    [animalRecord.caravanaId, animalRecord.events, animalRecord.ownerName, appendEventToActiveAnimal]
   );
+
+  const syncOfflineEvents = useCallback(async (): Promise<SyncResult> => {
+    const targetCaravana = selectedCaravanaId;
+    const currentAnimal = recordsRef.current[targetCaravana];
+    if (!currentAnimal) {
+      return { synced: 0, failed: 0 };
+    }
+
+    const updatedEvents = [...currentAnimal.events];
+    let synced = 0;
+    let failed = 0;
+
+    for (let index = 0; index < updatedEvents.length; index += 1) {
+      const event = updatedEvents[index];
+      if (!event.isOfflinePending) {
+        continue;
+      }
+
+      const previousHash =
+        index > 0 ? updatedEvents[index - 1].hederaTransactionId : GENESIS_PREVIOUS_HASH;
+
+      try {
+        const response = await fetch('/api/sign', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            payload: {
+              type: event.type,
+              title: event.title,
+              metadata: event.metadata,
+              visibilityCategory: event.visibilityCategory,
+              caravanaId: targetCaravana,
+              capturedOfflineAt: event.timestamp,
+            },
+            previousHash,
+          }),
+        });
+
+        if (!response.ok) {
+          failed += 1;
+          break;
+        }
+
+        const { transactionId, hashscanUrl, verified } = ((await response
+          .json()
+          .catch(() => null)) ?? {}) as Partial<SignApiResponse>;
+
+        if (!verified || !transactionId || !hashscanUrl) {
+          failed += 1;
+          break;
+        }
+
+        const syncedEvent: TraceabilityEvent = {
+          ...event,
+          previousHash,
+          hederaTransactionId: transactionId,
+          hashscanUrl,
+          isOfflinePending: false,
+          signatures: {
+            producer:
+              event.signatures?.producer ??
+              (currentAnimal.ownerName.split(' - ')[0] || currentAnimal.ownerName),
+            ...(event.signatures?.veterinarian
+              ? { veterinarian: event.signatures.veterinarian }
+              : {}),
+            authority: 'Sincronizado Hedera HCS',
+          },
+        };
+
+        updatedEvents[index] = syncedEvent;
+        synced += 1;
+
+        setRecordsByCaravana((prev) => {
+          const target = prev[targetCaravana];
+          if (!target) {
+            return prev;
+          }
+          const nextEvents = target.events.map((item) =>
+            item.id === syncedEvent.id ? syncedEvent : item
+          );
+          return {
+            ...prev,
+            [targetCaravana]: {
+              ...target,
+              events: nextEvents,
+            },
+          };
+        });
+      } catch {
+        failed += 1;
+        break;
+      }
+    }
+
+    return { synced, failed };
+  }, [selectedCaravanaId]);
+
+  const resetDemoData = useCallback(() => {
+    try {
+      window.localStorage.removeItem(OPERATIONAL_DB_KEY);
+    } catch {
+    }
+    setRecordsByCaravana(defaultRecords);
+    setIsOfflineFieldMode(false);
+  }, [defaultRecords]);
 
   const value = useMemo(
     () => ({
@@ -300,11 +511,17 @@ export function TraceabilityProvider({
       selectAnimal,
       currentRole,
       setCurrentRole,
+      isOfflineFieldMode,
+      toggleOfflineFieldMode,
+      pendingOfflineCount,
+      isDemoModified,
       updateSovereigntyPolicy,
       toggleSovereigntyPolicy,
       setSovereigntyPolicy,
       registerSignedEvent,
       registerOfflineFallbackEvent,
+      syncOfflineEvents,
+      resetDemoData,
       isEventVisible,
       visibleEvents,
     }),
@@ -313,11 +530,17 @@ export function TraceabilityProvider({
       availableAnimals,
       selectAnimal,
       currentRole,
+      isOfflineFieldMode,
+      toggleOfflineFieldMode,
+      pendingOfflineCount,
+      isDemoModified,
       updateSovereigntyPolicy,
       toggleSovereigntyPolicy,
       setSovereigntyPolicy,
       registerSignedEvent,
       registerOfflineFallbackEvent,
+      syncOfflineEvents,
+      resetDemoData,
       isEventVisible,
       visibleEvents,
     ]

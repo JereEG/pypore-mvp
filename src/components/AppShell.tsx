@@ -22,7 +22,7 @@ export function AppShell() {
 
   return (
     <TraceabilityProvider>
-      <div className="max-w-md mx-auto min-h-screen bg-stone-50 shadow-xl border-x border-stone-200 flex flex-col justify-between">
+      <div className="max-w-md mx-auto min-h-screen bg-stone-50 shadow-xl border-x border-stone-200 flex flex-col justify-between print:max-w-none print:border-0 print:shadow-none print:bg-white">
         <div>
           <RoleSimulatorBanner />
           <main className="space-y-6 px-4 py-5">

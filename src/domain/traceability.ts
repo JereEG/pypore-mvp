@@ -10,6 +10,12 @@ export type SovereigntyPolicy = Record<SovereigntyPolicyKey, boolean>;
 
 export type EventType = 'NACIMIENTO' | 'VACUNACION' | 'PESAJE' | 'TRASLADO';
 
+export interface TripleSignature {
+  producer: string;
+  veterinarian?: string;
+  authority?: string;
+}
+
 export interface TraceabilityEvent {
   id: string;
   timestamp: string;
@@ -21,6 +27,7 @@ export interface TraceabilityEvent {
   hederaTransactionId: string;
   hashscanUrl: string;
   isOfflinePending?: boolean;
+  signatures?: TripleSignature;
 }
 
 export interface AnimalRecord {

@@ -24,3 +24,14 @@ dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
 }
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  dialog::backdrop {
+    background: transparent;
+  }
+}

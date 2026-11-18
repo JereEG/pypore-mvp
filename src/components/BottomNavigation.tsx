@@ -16,7 +16,7 @@ interface BottomNavigationProps {
 
 export function BottomNavigation({ activeView, onChange }: BottomNavigationProps) {
   return (
-    <nav className="sticky bottom-0 z-30 grid grid-cols-3 border-t border-stone-200 bg-white/95 backdrop-blur">
+    <nav className="print:hidden sticky bottom-0 z-30 grid grid-cols-3 border-t border-stone-200 bg-white/95 backdrop-blur">
       {NAV_ITEMS.map(({ view, icon: Icon }) => {
         const isActive = view === activeView;
         return (

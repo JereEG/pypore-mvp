@@ -41,7 +41,7 @@ export function AnimalHeaderCard() {
     <>
       <section className="rounded-2xl bg-emerald-950 p-4 text-white shadow-lg">
         {availableAnimals.length > 1 && (
-          <div className="mb-3 flex flex-wrap gap-1.5" role="group" aria-label="Selector de ejemplar">
+          <div className="print:hidden mb-3 flex flex-wrap gap-1.5" role="group" aria-label="Selector de ejemplar">
             {availableAnimals.map((animal) => {
               const isSelected = animal.caravanaId === animalRecord.caravanaId;
               const isBuffalo = animal.caravanaId.includes('BUF');
@@ -160,7 +160,7 @@ export function AnimalHeaderCard() {
                 </p>
               </div>
             </div>
-            <form method="dialog">
+            <form method="dialog" className="print:hidden">
               <button
                 type="submit"
                 aria-label="Cerrar certificado"
@@ -224,7 +224,7 @@ export function AnimalHeaderCard() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 pt-1">
+          <div className="print:hidden flex items-center gap-2 pt-1">
             <button
               type="button"
               autoFocus

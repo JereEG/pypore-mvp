@@ -1,7 +1,16 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2, Clock3, Loader2, ShieldCheck, TriangleAlert, WifiOff, X } from 'lucide-react';
+import {
+  CheckCircle2,
+  Clock3,
+  Loader2,
+  ShieldCheck,
+  TriangleAlert,
+  Wifi,
+  WifiOff,
+  X,
+} from 'lucide-react';
 import { EventRegistrationError, useTraceability } from '@/context/TraceabilityContext';
 import {
   EVENT_FORM_FIELDS,
@@ -22,7 +31,12 @@ const inputClassName =
   'w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20';
 
 export function RegisterEventView() {
-  const { registerSignedEvent, registerOfflineFallbackEvent } = useTraceability();
+  const {
+    isOfflineFieldMode,
+    toggleOfflineFieldMode,
+    registerSignedEvent,
+    registerOfflineFallbackEvent,
+  } = useTraceability();
   const [eventType, setEventType] = useState<EventType>('VACUNACION');
   const [title, setTitle] = useState('');
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
@@ -55,6 +69,15 @@ export function RegisterEventView() {
     submitEvent.preventDefault();
     setStatus('loading');
 
+    if (isOfflineFieldMode) {
+      const offlineEvent = await registerOfflineFallbackEvent(buildEventInput());
+      setLastSignedEvent(offlineEvent);
+      setTitle('');
+      setFieldValues({});
+      setStatus('success');
+      return;
+    }
+
     try {
       const signedEvent = await registerSignedEvent(buildEventInput());
       setLastSignedEvent(signedEvent);
@@ -85,7 +108,58 @@ export function RegisterEventView() {
 
   return (
     <section>
-      <h2 className="mb-4 text-base font-bold text-emerald-950">{VIEW_LABELS.REGISTER.title}</h2>
+      <h2 className="mb-3 text-base font-bold text-emerald-950">{VIEW_LABELS.REGISTER.title}</h2>
+
+      <div
+        className={`mb-4 rounded-xl border p-3 transition ${
+          isOfflineFieldMode
+            ? 'border-amber-300 bg-amber-50'
+            : 'border-emerald-200 bg-emerald-50/70'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-start gap-2.5">
+            <span
+              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                isOfflineFieldMode
+                  ? 'bg-amber-500/20 text-amber-800'
+                  : 'bg-emerald-600/15 text-emerald-700'
+              }`}
+            >
+              {isOfflineFieldMode ? <WifiOff size={14} /> : <Wifi size={14} />}
+            </span>
+            <div>
+              <p
+                className={`text-xs font-bold ${
+                  isOfflineFieldMode ? 'text-amber-900' : 'text-emerald-950'
+                }`}
+              >
+                {UI_TEXTS.offlineModeLabel}
+              </p>
+              <p className="mt-0.5 text-[11px] leading-snug text-stone-600">
+                {UI_TEXTS.offlineModeDescription}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isOfflineFieldMode}
+            aria-label={UI_TEXTS.offlineModeLabel}
+            onClick={toggleOfflineFieldMode}
+            className={`relative h-6 w-11 shrink-0 rounded-full transition ${
+              isOfflineFieldMode ? 'bg-amber-600' : 'bg-stone-300'
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
+                isOfflineFieldMode ? 'left-[22px]' : 'left-0.5'
+              }`}
+            />
+          </button>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
         <div>
           <span className="mb-1.5 block text-xs font-semibold text-stone-600">Tipo de hito</span>
@@ -134,10 +208,24 @@ export function RegisterEventView() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-950 py-3 text-sm font-bold text-white transition hover:bg-emerald-900 disabled:opacity-70"
+          className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm font-bold text-white transition disabled:opacity-70 ${
+            isOfflineFieldMode
+              ? 'bg-amber-600 hover:bg-amber-700'
+              : 'bg-emerald-950 hover:bg-emerald-900'
+          }`}
         >
-          {isLoading ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
-          {isLoading ? UI_TEXTS.signingLabel : UI_TEXTS.submitLabel}
+          {isLoading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : isOfflineFieldMode ? (
+            <WifiOff size={16} />
+          ) : (
+            <ShieldCheck size={16} />
+          )}
+          {isLoading
+            ? UI_TEXTS.signingLabel
+            : isOfflineFieldMode
+              ? UI_TEXTS.offlineSubmitLabel
+              : UI_TEXTS.submitLabel}
         </button>
 
         {status === 'success' && lastSignedEvent && (
