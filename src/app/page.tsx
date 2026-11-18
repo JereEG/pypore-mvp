@@ -4,7 +4,6 @@ import {
   Award,
   BadgeCheck,
   BarChart3,
-  Bot,
   Compass,
   Database,
   DollarSign,
@@ -166,8 +165,7 @@ interface TeamMember {
   role: string;
   badge: string;
   description: string;
-  icon: typeof UserCheck;
-  linkedinUrl?: string;
+  linkedinUrl: string;
 }
 
 const TEAM_MEMBERS: TeamMember[] = [
@@ -176,8 +174,8 @@ const TEAM_MEMBERS: TeamMember[] = [
     role: 'Fundador & Lead Software Engineer',
     badge: 'FaCENA · UNNE',
     description:
-      'Estudiante avanzado de Licenciatura en Sistemas de Información (FaCENA - UNNE). Arquitectura Full Stack e integración Web3 en Hedera.',
-    icon: UserCheck,
+      'Analista Programador Universitario finalizando Lic. en Sistemas de Información (FaCENA - UNNE). Especialista en arquitectura Full Stack, Mobile (React Native) y soluciones Web3 / On-Chain en Hedera.',
+    linkedinUrl: 'https://www.linkedin.com/in/jereeg',
   },
   {
     name: 'Belén García Moyanesi',
@@ -186,7 +184,6 @@ const TEAM_MEMBERS: TeamMember[] = [
     description:
       'Estudiante avanzada de Ingeniería en Sistemas (UTN FRRe), Project Manager en ICCTI y Coach Ontológico organizacional. Experiencia en análisis funcional y representación en IEEE Argentina.',
     linkedinUrl: 'https://www.linkedin.com/in/belenmoyanesi',
-    icon: UserCheck,
   },
   {
     name: 'Facundo Matías Cubells Romero',
@@ -195,7 +192,6 @@ const TEAM_MEMBERS: TeamMember[] = [
     description:
       'Formación en Ingeniería en Sistemas (UTN FRRe), fundador de ClickArg y voluntario en IEEE y Rotary. Especialista en rediseño de flujos, agentes de IA y escalamiento comercial.',
     linkedinUrl: 'https://www.linkedin.com/in/facundo-cubells',
-    icon: UserCheck,
   },
   {
     name: 'Luciana Belén Canteros',
@@ -204,15 +200,6 @@ const TEAM_MEMBERS: TeamMember[] = [
     description:
       'Analista Programadora Universitaria y Diplomada en Ciencia de Datos (UNNE). Data Scientist en SEGEM con experiencia en Python, LLMs e investigación presentada en las 55° JAIIO (SADIO).',
     linkedinUrl: 'https://www.linkedin.com/in/luciana-belen-canteros-729513318',
-    icon: UserCheck,
-  },
-  {
-    name: 'Gemini / Argon (IA Agéntica)',
-    role: 'Co-piloto de Arquitectura, Investigación y Producto',
-    badge: 'IA Agéntica',
-    description:
-      'Asistencia continua en contraste lógico, diseño de sistemas y validación de procesos.',
-    icon: Bot,
   },
 ];
 
@@ -827,88 +814,83 @@ export default function LandingPage() {
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/25 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-500/40">
                 <Users size={13} />
-                Equipo Híbrido + Convocatoria Abierta
+                Equipo Fundador (UNNE + UTN FRRe) + Convocatoria Abierta
               </span>
               <h2 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
                 Quiénes Somos
               </h2>
             </div>
 
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {TEAM_MEMBERS.map((member) => {
-                const Icon = member.icon;
-                return (
-                  <article
-                    key={member.name}
-                    className="flex flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-6 shadow-lg"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
-                          <Icon size={22} />
-                        </span>
-                        <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
-                          {member.badge}
-                        </span>
-                      </div>
-                      <h3 className="mt-4 text-lg font-bold text-white">{member.name}</h3>
-                      <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
-                        {member.role}
-                      </p>
-                      <p className="mt-3 text-sm leading-relaxed text-emerald-100/80">
-                        {member.description}
-                      </p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {TEAM_MEMBERS.map((member) => (
+                <article
+                  key={member.name}
+                  className="flex flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-6 shadow-lg"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
+                        <UserCheck size={22} />
+                      </span>
+                      <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
+                        {member.badge}
+                      </span>
                     </div>
-
-                    {member.linkedinUrl && (
-                      <div className="mt-5 border-t border-emerald-800/70 pt-3">
-                        <a
-                          href={member.linkedinUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 transition hover:text-white"
-                        >
-                          <span>Perfil de LinkedIn</span>
-                          <ExternalLink size={12} />
-                        </a>
-                      </div>
-                    )}
-                  </article>
-                );
-              })}
-
-              <article className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-amber-400/60 bg-emerald-900/20 p-6 shadow-lg transition hover:border-amber-400 hover:bg-emerald-900/40">
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40">
-                      <Users size={22} />
-                    </span>
-                    <span className="rounded-full bg-amber-500/15 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-amber-300 ring-1 ring-amber-400/30">
-                      Convocatoria Activa
-                    </span>
+                    <h3 className="mt-4 text-lg font-bold text-white">{member.name}</h3>
+                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                      {member.role}
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-emerald-100/80">
+                      {member.description}
+                    </p>
                   </div>
-                  <h3 className="mt-4 text-lg font-bold text-white">
+
+                  <div className="mt-5 border-t border-emerald-800/70 pt-3">
+                    <a
+                      href={member.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 transition hover:text-white"
+                    >
+                      <span>Perfil de LinkedIn</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <article className="mt-6 flex flex-col justify-between gap-6 rounded-2xl border-2 border-dashed border-amber-400/60 bg-emerald-900/20 p-6 shadow-lg transition hover:border-amber-400 hover:bg-emerald-900/40 md:flex-row md:items-center">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40">
+                  <Users size={22} />
+                </span>
+                <div>
+                  <span className="inline-block rounded-full bg-amber-500/15 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-amber-300 ring-1 ring-amber-400/30">
+                    Convocatoria Activa
+                  </span>
+                  <h3 className="mt-2 text-lg font-bold text-white">
                     Búsqueda Abierta — Aliados del Agro &amp; Co-equipers
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-emerald-100/85">
+                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-emerald-100/85">
                     Buscamos veterinarios, productores, referentes agroindustriales y talentos
                     técnicos que quieran sumarse a validar y escalar esta solución en el campo.
                   </p>
                 </div>
+              </div>
 
-                <div className="mt-6 pt-2">
-                  <a
-                    href={SURVEY_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-emerald-950 shadow transition hover:bg-amber-400"
-                  >
-                    <span>Sumarme / Completar Formulario</span>
-                    <ExternalLink size={14} />
-                  </a>
-                </div>
-              </article>
-            </div>
+              <div className="shrink-0">
+                <a
+                  href={SURVEY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-5 py-3 text-xs font-bold text-emerald-950 shadow transition hover:bg-amber-400 md:w-auto"
+                >
+                  <span>Sumarme / Completar Formulario</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            </article>
           </div>
         </section>
       </main>
