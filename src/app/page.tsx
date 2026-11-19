@@ -15,6 +15,7 @@ import {
   LockKeyhole,
   MapPin,
   Nfc,
+  Plus,
   QrCode,
   ShieldAlert,
   ShieldCheck,
@@ -169,7 +170,7 @@ interface TeamMember {
   linkedinUrl: string;
 }
 
-const TEAM_MEMBERS: TeamMember[] = [
+const LEADERSHIP_MEMBERS: TeamMember[] = [
   {
     name: 'Jeremías Ezequiel González',
     role: 'Fundador & Lead Software Engineer',
@@ -178,6 +179,9 @@ const TEAM_MEMBERS: TeamMember[] = [
       'Analista Programador Universitario finalizando Lic. en Sistemas de Información (FaCENA - UNNE). Especialista en arquitectura Full Stack, Mobile (React Native) y soluciones Web3 / On-Chain en Hedera.',
     linkedinUrl: 'https://www.linkedin.com/in/jereeg',
   },
+];
+
+const TEAM_MEMBERS: TeamMember[] = [
   {
     name: 'Belén García Moyanesi',
     role: 'Project Management & Análisis Funcional',
@@ -201,6 +205,22 @@ const TEAM_MEMBERS: TeamMember[] = [
     description:
       'Analista Programadora Universitaria y Diplomada en Ciencia de Datos (UNNE). Data Scientist en SEGEM con experiencia en Python, LLMs e investigación presentada en las 55° JAIIO (SADIO).',
     linkedinUrl: 'https://www.linkedin.com/in/luciana-belen-canteros-729513318',
+  },
+  {
+    name: 'Facundo Nicolás González',
+    role: 'AI, Computer Vision & Backend',
+    badge: 'FaCENA · UNNE',
+    description:
+      'Estudiante avanzado de Lic. en Sistemas (FaCENA - UNNE). Desarrollador Backend & AI/ML (Python, FastAPI, PostgreSQL, Computer Vision / YOLO) para pipelines de datos y sistemas inteligentes.',
+    linkedinUrl: 'https://www.linkedin.com/in/facundo-n-gonzalez',
+  },
+  {
+    name: 'María Guadalupe Lana',
+    role: 'Analista Programadora & Bases de Datos',
+    badge: 'FaCENA · UNNE',
+    description:
+      'Analista Programadora Universitaria y estudiante avanzada de Lic. en Sistemas (FaCENA - UNNE). Desarrollo multi-lenguaje, bases de datos y gestión de la información.',
+    linkedinUrl: 'https://www.linkedin.com/in/mariaguadalupelana',
   },
 ];
 
@@ -776,38 +796,42 @@ export default function LandingPage() {
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/25 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-500/40">
                 <Users size={13} />
-                Equipo Fundador (UNNE + UTN FRRe) + Convocatoria Abierta
+                Organigrama · Equipo Técnico &amp; Liderazgo
               </span>
               <h2 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
                 Quiénes Somos
               </h2>
+              <p className="mt-2 text-xs text-emerald-200/75 sm:text-sm">
+                Deslizá horizontalmente el carril de especialistas; abajo se apoya la conducción y
+                dirección estratégica.
+              </p>
             </div>
 
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4">
               {TEAM_MEMBERS.map((member) => (
                 <article
                   key={member.name}
-                  className="flex flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-6 shadow-lg"
+                  className="flex w-72 shrink-0 snap-start flex-col justify-between rounded-2xl border border-emerald-800 bg-emerald-900/35 p-5 shadow-lg sm:w-80"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
-                        <UserCheck size={22} />
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600/25 text-emerald-300 ring-1 ring-emerald-500/40">
+                        <UserCheck size={20} />
                       </span>
                       <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
                         {member.badge}
                       </span>
                     </div>
-                    <h3 className="mt-4 text-lg font-bold text-white">{member.name}</h3>
-                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                    <h3 className="mt-4 text-base font-bold text-white">{member.name}</h3>
+                    <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
                       {member.role}
                     </p>
-                    <p className="mt-3 text-sm leading-relaxed text-emerald-100/80">
+                    <p className="mt-2.5 text-xs leading-relaxed text-emerald-100/80 sm:text-sm">
                       {member.description}
                     </p>
                   </div>
 
-                  <div className="mt-5 border-t border-emerald-800/70 pt-3">
+                  <div className="mt-4 border-t border-emerald-800/70 pt-3">
                     <a
                       href={member.linkedinUrl}
                       target="_blank"
@@ -820,39 +844,121 @@ export default function LandingPage() {
                   </div>
                 </article>
               ))}
-            </div>
 
-            <article className="mt-6 flex flex-col justify-between gap-6 rounded-2xl border-2 border-dashed border-amber-400/60 bg-emerald-900/20 p-6 shadow-lg transition hover:border-amber-400 hover:bg-emerald-900/40 md:flex-row md:items-center">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40">
-                  <Users size={22} />
-                </span>
+              <article className="flex w-72 shrink-0 snap-start flex-col justify-between rounded-2xl border-2 border-dashed border-amber-400/60 bg-emerald-900/20 p-5 shadow-lg transition hover:border-amber-400 hover:bg-emerald-900/40 sm:w-80">
                 <div>
-                  <span className="inline-block rounded-full bg-amber-500/15 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-amber-300 ring-1 ring-amber-400/30">
-                    Convocatoria Activa
-                  </span>
-                  <h3 className="mt-2 text-lg font-bold text-white">
-                    Búsqueda Abierta — Aliados del Agro &amp; Co-equipers
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40">
+                      <Plus size={22} />
+                    </span>
+                    <span className="rounded-full bg-amber-500/15 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-amber-300 ring-1 ring-amber-400/30">
+                      Próximamente
+                    </span>
+                  </div>
+                  <h3 className="mt-4 text-base font-bold text-white">
+                    + Próximamente · Sumate
                   </h3>
-                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-emerald-100/85">
+                  <p className="mt-2 text-xs leading-relaxed text-emerald-100/85 sm:text-sm">
                     Buscamos veterinarios, productores, referentes agroindustriales y talentos
-                    técnicos que quieran sumarse a validar y escalar esta solución en el campo.
+                    técnicos para seguir ampliando el equipo en el campo.
                   </p>
                 </div>
-              </div>
 
-              <div className="shrink-0">
-                <a
-                  href={SURVEY_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-5 py-3 text-xs font-bold text-emerald-950 shadow transition hover:bg-amber-400 md:w-auto"
-                >
-                  <span>Sumarme / Completar Formulario</span>
-                  <ExternalLink size={14} />
-                </a>
+                <div className="mt-4 pt-2">
+                  <a
+                    href={SURVEY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-emerald-950 shadow transition hover:bg-amber-400"
+                  >
+                    <span>Postularme / Sumarme</span>
+                    <ExternalLink size={13} />
+                  </a>
+                </div>
+              </article>
+            </div>
+
+            <div className="mx-auto my-2 flex max-w-md flex-col items-center" aria-hidden="true">
+              <div className="h-5 w-px bg-emerald-600/60" />
+              <div className="h-px w-full bg-emerald-600/40" />
+              <div className="h-5 w-px bg-emerald-600/60" />
+            </div>
+
+            <div>
+              <p className="mb-3 text-center font-mono text-[11px] font-bold uppercase tracking-widest text-amber-400">
+                Liderazgo &amp; Dirección
+              </p>
+              <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
+                {LEADERSHIP_MEMBERS.map((leader) => (
+                  <article
+                    key={leader.name}
+                    className="flex flex-col justify-between rounded-2xl border border-amber-400/45 bg-emerald-900/45 p-6 shadow-xl"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40">
+                          <UserCheck size={22} />
+                        </span>
+                        <span className="rounded-full bg-emerald-950 px-2.5 py-1 font-mono text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-800">
+                          {leader.badge}
+                        </span>
+                      </div>
+                      <h3 className="mt-4 text-lg font-bold text-white">{leader.name}</h3>
+                      <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-amber-300">
+                        {leader.role}
+                      </p>
+                      <p className="mt-3 text-sm leading-relaxed text-emerald-100/85">
+                        {leader.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-5 border-t border-emerald-800/70 pt-3">
+                      <a
+                        href={leader.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-300 transition hover:text-white"
+                      >
+                        <span>Perfil de LinkedIn</span>
+                        <ExternalLink size={12} />
+                      </a>
+                    </div>
+                  </article>
+                ))}
+
+                <article className="flex flex-col justify-between rounded-2xl border-2 border-dashed border-amber-400/60 bg-emerald-900/20 p-6 shadow-lg transition hover:border-amber-400 hover:bg-emerald-900/40">
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/40">
+                        <Plus size={22} />
+                      </span>
+                      <span className="rounded-full bg-amber-500/15 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-amber-300 ring-1 ring-amber-400/30">
+                        Búsqueda Activa
+                      </span>
+                    </div>
+                    <h3 className="mt-4 text-lg font-bold text-white">
+                      + Próximamente · Dirección Ejecutiva (CEO)
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-emerald-100/85">
+                      Liderazgo financiero, expansión comercial B2B2C y vinculación con cabañas,
+                      frigoríficos e inversores internacionales.
+                    </p>
+                  </div>
+
+                  <div className="mt-5 pt-2">
+                    <a
+                      href={SURVEY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-emerald-950 shadow transition hover:bg-amber-400"
+                    >
+                      <span>Postular / Recomendar Líder</span>
+                      <ExternalLink size={14} />
+                    </a>
+                  </div>
+                </article>
               </div>
-            </article>
+            </div>
           </div>
         </section>
       </main>
@@ -872,6 +978,14 @@ export default function LandingPage() {
               className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-900/60 px-3.5 py-2 text-emerald-200 transition hover:bg-emerald-800 hover:text-white"
             >
               <span>Ir a la Demo (/demo)</span>
+              <ArrowRight size={13} />
+            </Link>
+
+            <Link
+              href="/ruta"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-800 px-3.5 py-2 text-emerald-200 transition hover:border-emerald-600 hover:text-white"
+            >
+              <span>Ruta IoT &amp; Caja Negra (/ruta)</span>
               <ArrowRight size={13} />
             </Link>
 
