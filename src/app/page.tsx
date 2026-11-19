@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -240,51 +241,6 @@ function TickCounterArtwork() {
       <rect x="254" y="178" width="124" height="26" rx="6" fill="#022c22" stroke="#fbbf24" strokeOpacity="0.55" />
       <text x="266" y="195" fill="#fbbf24" fontSize="10" fontFamily="monospace" fontWeight="bold">
         HUEVOS: 4 DETECTADOS
-      </text>
-    </svg>
-  );
-}
-
-function HederaAwardArtwork() {
-  return (
-    <svg viewBox="0 0 400 225" className="h-full w-full" aria-hidden="true">
-      <defs>
-        <linearGradient id="awardBg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#022c22" />
-          <stop offset="100%" stopColor="#065f46" />
-        </linearGradient>
-      </defs>
-      <rect width="400" height="225" fill="url(#awardBg)" />
-      <circle cx="200" cy="108" r="82" fill="#022c22" fillOpacity="0.65" stroke="#fbbf24" strokeOpacity="0.35" strokeWidth="2" />
-      <circle cx="90" cy="70" r="14" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
-      <circle cx="310" cy="70" r="14" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
-      <circle cx="90" cy="155" r="14" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
-      <circle cx="310" cy="155" r="14" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
-      <line x1="104" y1="74" x2="156" y2="96" stroke="#34d399" strokeOpacity="0.5" strokeWidth="2" strokeDasharray="4 3" />
-      <line x1="296" y1="74" x2="244" y2="96" stroke="#34d399" strokeOpacity="0.5" strokeWidth="2" strokeDasharray="4 3" />
-      <line x1="104" y1="150" x2="156" y2="122" stroke="#34d399" strokeOpacity="0.5" strokeWidth="2" strokeDasharray="4 3" />
-      <line x1="296" y1="150" x2="244" y2="122" stroke="#34d399" strokeOpacity="0.5" strokeWidth="2" strokeDasharray="4 3" />
-      <path
-        d="M174 66H226V98C226 114 214.5 126 200 126C185.5 126 174 114 174 98V66Z"
-        fill="#fbbf24"
-        fillOpacity="0.2"
-        stroke="#fbbf24"
-        strokeWidth="3"
-      />
-      <path d="M174 76H160C160 92 166 101 174 102" stroke="#fbbf24" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <path d="M226 76H240C240 92 234 101 226 102" stroke="#fbbf24" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <line x1="200" y1="126" x2="200" y2="146" stroke="#fbbf24" strokeWidth="3" />
-      <rect x="176" y="146" width="48" height="10" rx="3" fill="#fbbf24" />
-      <text x="200" y="102" textAnchor="middle" fill="#fef3c7" fontSize="18" fontFamily="monospace" fontWeight="bold">
-        1°
-      </text>
-      <rect x="22" y="20" width="166" height="26" rx="6" fill="#022c22" stroke="#fbbf24" strokeOpacity="0.55" />
-      <text x="34" y="37" fill="#fbbf24" fontSize="10" fontFamily="monospace" fontWeight="bold">
-        TRACK HEDERA · 1° PUESTO
-      </text>
-      <rect x="234" y="178" width="144" height="26" rx="6" fill="#022c22" stroke="#34d399" strokeOpacity="0.5" />
-      <text x="246" y="195" fill="#6ee7b7" fontSize="10" fontFamily="monospace" fontWeight="bold">
-        TOPIC 0.0.11057428
       </text>
     </svg>
   );
@@ -742,11 +698,17 @@ export default function LandingPage() {
                     key={milestone.period}
                     className="flex flex-col overflow-hidden rounded-2xl border border-emerald-800/90 bg-emerald-950/70 shadow-lg"
                   >
-                    <div className="aspect-video w-full border-b border-emerald-800/80 bg-emerald-950">
+                    <div className="aspect-video w-full overflow-hidden border-b border-emerald-800/80 bg-emerald-950">
                       {milestone.artwork === 'tick' ? (
                         <TickCounterArtwork />
                       ) : (
-                        <HederaAwardArtwork />
+                        <Image
+                          src="/images/hito-premio-hedera.jpg"
+                          alt="Premiación 1° Puesto Track Hedera en NEA TECH 2026 - Pyporé"
+                          width={1024}
+                          height={768}
+                          className="h-full w-full object-cover"
+                        />
                       )}
                     </div>
 
