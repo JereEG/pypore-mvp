@@ -875,6 +875,14 @@ export default function LandingPage() {
               <ArrowRight size={13} />
             </Link>
 
+            <Link
+              href="/ruta"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-800 px-3.5 py-2 text-emerald-200 transition hover:border-emerald-600 hover:text-white"
+            >
+              <span>Ruta IoT &amp; Caja Negra (/ruta)</span>
+              <ArrowRight size={13} />
+            </Link>
+
             <a
               href={SURVEY_URL}
               target="_blank"
