@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   BadgeCheck,
   Baby,
@@ -10,11 +10,14 @@ import {
   Loader2,
   LockKeyhole,
   LucideIcon,
+  Printer,
+  QrCode,
   RefreshCw,
   RotateCcw,
   Scale,
   Syringe,
   Truck,
+  X,
 } from 'lucide-react';
 import { useTraceability } from '@/context/TraceabilityContext';
 import { EVENT_TYPE_LABELS, UI_TEXTS, VIEW_LABELS } from '@/domain/demoConfig';
@@ -69,7 +72,15 @@ function SignatureChips({ signatures }: { signatures: TripleSignature }) {
   );
 }
 
-function TimelineEvent({ event, isLocked }: { event: TraceabilityEvent; isLocked: boolean }) {
+function TimelineEvent({
+  event,
+  isLocked,
+  onSelectPrint,
+}: {
+  event: TraceabilityEvent;
+  isLocked: boolean;
+  onSelectPrint: (event: TraceabilityEvent) => void;
+}) {
   const Icon = EVENT_ICONS[event.type];
 
   return (
@@ -151,6 +162,16 @@ function TimelineEvent({ event, isLocked }: { event: TraceabilityEvent; isLocked
           <p className="font-mono text-[10px] text-stone-400">
             prev: {truncateHash(event.previousHash)}
           </p>
+          {!isLocked && (
+            <button
+              type="button"
+              onClick={() => onSelectPrint(event)}
+              className="print:hidden mt-1 inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-950 transition hover:bg-emerald-50"
+            >
+              <Printer size={12} />
+              Constancia / Imprimir
+            </button>
+          )}
         </footer>
       </article>
     </li>
@@ -168,6 +189,13 @@ export function PassportView() {
   } = useTraceability();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<TraceabilityEvent | null>(null);
+  const receiptDialogRef = useRef<HTMLDialogElement>(null);
+
+  const openReceipt = (event: TraceabilityEvent) => {
+    setSelectedEvent(event);
+    receiptDialogRef.current?.showModal();
+  };
 
   const handleSync = async () => {
     setIsSyncing(true);
@@ -253,10 +281,93 @@ export function PassportView() {
         <span className="absolute bottom-4 left-[17px] top-4 w-0.5 bg-stone-300" aria-hidden />
         <ol className="relative space-y-4">
           {animalRecord.events.map((event) => (
-            <TimelineEvent key={event.id} event={event} isLocked={!isEventVisible(event)} />
+            <TimelineEvent
+              key={event.id}
+              event={event}
+              isLocked={!isEventVisible(event)}
+              onSelectPrint={openReceipt}
+            />
           ))}
         </ol>
       </div>
+
+      <dialog
+        ref={receiptDialogRef}
+        aria-labelledby="event-receipt-title"
+        {...({ closedby: 'any' } as Record<string, string>)}
+        className="m-auto w-[min(92dvw,26rem)] rounded-2xl border border-emerald-800 bg-white p-0 text-stone-900 shadow-2xl backdrop:bg-emerald-950/75"
+      >
+        {selectedEvent && (
+          <div>
+            <div className="flex items-center justify-between bg-emerald-950 px-5 py-4 text-white">
+              <div>
+                <h3 id="event-receipt-title" className="text-sm font-bold">
+                  Constancia Sanitaria · Pyporé
+                </h3>
+                <p className="font-mono text-[11px] text-emerald-300">{animalRecord.caravanaId}</p>
+              </div>
+              <form method="dialog" className="print:hidden">
+                <button
+                  type="submit"
+                  aria-label="Cerrar constancia"
+                  className="rounded-lg p-1 text-emerald-200 hover:bg-emerald-900 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              </form>
+            </div>
+            <div className="space-y-3 p-5 text-xs">
+              <div className="flex items-center gap-3 rounded-xl border border-stone-200 bg-stone-50 p-3">
+                <QrCode size={48} className="shrink-0 text-emerald-950" />
+                <div className="min-w-0">
+                  <p className="font-bold text-emerald-950">{selectedEvent.title}</p>
+                  <p className="font-mono text-[10px] text-stone-500">
+                    {formatTechnicalDate(selectedEvent.timestamp)}
+                  </p>
+                </div>
+              </div>
+              <dl className="space-y-1.5 rounded-xl border border-stone-200 p-3">
+                <div className="flex justify-between gap-2">
+                  <dt className="text-stone-500">RENSPA</dt>
+                  <dd className="font-mono font-semibold">{animalRecord.renspa}</dd>
+                </div>
+                {Object.entries(selectedEvent.metadata).map(([key, value]) => (
+                  <div key={key} className="flex justify-between gap-2">
+                    <dt className="text-stone-500">{key}</dt>
+                    <dd className="text-right font-semibold">{value}</dd>
+                  </div>
+                ))}
+                <div className="flex justify-between gap-2 border-t border-stone-100 pt-1.5">
+                  <dt className="text-stone-500">Prueba DLT / Hash</dt>
+                  <dd className="font-mono font-semibold text-emerald-800">
+                    {truncateHash(selectedEvent.hederaTransactionId)}
+                  </dd>
+                </div>
+              </dl>
+              {selectedEvent.signatures && <SignatureChips signatures={selectedEvent.signatures} />}
+              <div className="print:hidden flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  autoFocus
+                  onClick={() => window.print()}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-950 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-900"
+                >
+                  <Printer size={14} />
+                  Imprimir / Guardar PDF
+                </button>
+                <form method="dialog">
+                  <button
+                    type="submit"
+                    className="rounded-xl border border-stone-300 px-4 py-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-100"
+                  >
+                    Cerrar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </dialog>
     </section>
   );
 }

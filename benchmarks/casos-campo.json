@@ -1,0 +1,102 @@
+[
+  {
+    "id": "case-01",
+    "input": "Hoy vacuné contra aftosa 12 terneros en el potrero norte, lote AR-05",
+    "expected": {
+      "type": "VACUNACION",
+      "quantityOrId": "12 terneros",
+      "location": "potrero norte",
+      "visibilityCategory": "shareSanitaryHistory"
+    }
+  },
+  {
+    "id": "case-02",
+    "input": "ayer pesamos el bufalo AR-05-BUF-0108 dio 254 kg en la bascula",
+    "expected": {
+      "type": "PESAJE",
+      "quantityOrId": "AR-05-BUF-0108",
+      "location": "",
+      "visibilityCategory": "shareWeightMetrics"
+    }
+  },
+  {
+    "id": "case-03",
+    "input": "salio camion con 18 novillos para el frigorifico guia dta 4421",
+    "expected": {
+      "type": "TRASLADO",
+      "quantityOrId": "18 novillos",
+      "location": "",
+      "visibilityCategory": "shareExactLocation"
+    }
+  },
+  {
+    "id": "case-04",
+    "input": "nacio un bucerro de la bufala 104 en estero norte peso 38kg",
+    "expected": {
+      "type": "NACIMIENTO",
+      "quantityOrId": "38kg",
+      "location": "estero norte",
+      "visibilityCategory": "shareGeneticData"
+    }
+  },
+  {
+    "id": "case-05",
+    "input": "pusimos ivermectina x garrapata a 25 cabezas corral 2",
+    "expected": {
+      "type": "VACUNACION",
+      "quantityOrId": "25 cabezas",
+      "location": "corral 2",
+      "visibilityCategory": "shareSanitaryHistory"
+    }
+  },
+  {
+    "id": "case-06",
+    "input": "destete precoz lote B-14 promedio 195 kilos hoy",
+    "expected": {
+      "type": "PESAJE",
+      "quantityOrId": "195 kilos",
+      "location": "lote B-14",
+      "visibilityCategory": "shareWeightMetrics"
+    }
+  },
+  {
+    "id": "case-07",
+    "input": "movimiento a feria de mercedes 10 vaquillonas braford",
+    "expected": {
+      "type": "TRASLADO",
+      "quantityOrId": "10 vaquillonas",
+      "location": "",
+      "visibilityCategory": "shareExactLocation"
+    }
+  },
+  {
+    "id": "case-08",
+    "input": "paricion en potrero sur 3 terneras nuevas caravaneo pendiente",
+    "expected": {
+      "type": "NACIMIENTO",
+      "quantityOrId": "3 terneras",
+      "location": "potrero sur",
+      "visibilityCategory": "shareGeneticData"
+    }
+  },
+  {
+    "id": "case-09",
+    "input": "18/11/2026 refuerzo brucelosis 8 vaquillas campo el rocio",
+    "expected": {
+      "type": "VACUNACION",
+      "quantityOrId": "Ejemplar / Lote activo",
+      "location": "campo el rocio",
+      "visibilityCategory": "shareSanitaryHistory"
+    }
+  },
+  {
+    "id": "case-10",
+    "input": "despache 20 bufalos a faena sin señal desde el monte",
+    "expected": {
+      "type": "TRASLADO",
+      "quantityOrId": "20 bufalos",
+      "location": "",
+      "visibilityCategory": "shareExactLocation"
+    }
+  }
+]

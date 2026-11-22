@@ -5,7 +5,10 @@ import {
   CheckCircle2,
   Clock3,
   Loader2,
+  Mic,
+  MicOff,
   ShieldCheck,
+  Sparkles,
   TriangleAlert,
   Wifi,
   WifiOff,
@@ -21,7 +24,28 @@ import {
   VIEW_LABELS,
 } from '@/domain/demoConfig';
 import { EventType, TraceabilityEvent } from '@/domain/traceability';
+import { parseNaturalFieldEvent } from '@/lib/naturalEventParser';
 import { HederaTransactionLink } from './HederaTransactionLink';
+
+interface SpeechRecognitionResultEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+}
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -43,6 +67,63 @@ export function RegisterEventView() {
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [lastSignedEvent, setLastSignedEvent] = useState<TraceabilityEvent | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [naturalText, setNaturalText] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [parseFeedback, setParseFeedback] = useState<string | null>(null);
+
+  const applyNaturalParse = (raw: string) => {
+    const parsed = parseNaturalFieldEvent(raw);
+    if (!parsed) {
+      setParseFeedback('Escribí o dictá al menos una acción breve (ej. vacunación, pesaje o traslado).');
+      return;
+    }
+    setEventType(parsed.type);
+    setTitle(parsed.title);
+    const mappedFields: Record<string, string> = {};
+    for (const field of EVENT_FORM_FIELDS[parsed.type]) {
+      if (/peso/i.test(field)) {
+        mappedFields[field] = parsed.quantityOrId;
+      } else if (/destino|vacuna/i.test(field)) {
+        mappedFields[field] = parsed.observations;
+      }
+    }
+    setFieldValues(mappedFields);
+    setStatus('idle');
+    setParseFeedback(`Interpretado: ${EVENT_TYPE_LABELS[parsed.type]} · ${parsed.quantityOrId} (${parsed.date}).`);
+  };
+
+  const handleVoiceCapture = () => {
+    const win = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionInstance;
+      webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+    };
+    const Recognition = win.SpeechRecognition ?? win.webkitSpeechRecognition;
+    if (!Recognition) {
+      setParseFeedback('Tu navegador no soporta dictado por voz; escribí la frase directamente.');
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.lang = 'es-AR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    setIsListening(true);
+    setParseFeedback('Escuchando… hablá cerca del micrófono.');
+    recognition.onresult = (event) => {
+      const transcript = event.results?.[0]?.[0]?.transcript ?? '';
+      if (transcript) {
+        setNaturalText(transcript);
+        applyNaturalParse(transcript);
+      }
+    };
+    recognition.onerror = () => {
+      setIsListening(false);
+      setParseFeedback('No se pudo capturar el audio. Probá escribiendo la frase.');
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+    recognition.start();
+  };
 
   const buildEventInput = () => {
     const metadata = Object.fromEntries(
@@ -158,6 +239,47 @@ export function RegisterEventView() {
             />
           </button>
         </div>
+      </div>
+
+      <div className="mb-4 rounded-xl border border-emerald-200 bg-white p-3.5 shadow-sm">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-950">
+            <Sparkles size={14} className="text-emerald-600" />
+            Registro Rápido por Texto o Voz
+          </span>
+          <button
+            type="button"
+            onClick={handleVoiceCapture}
+            aria-label="Dictar evento por voz"
+            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
+              isListening
+                ? 'bg-red-600 text-white'
+                : 'bg-emerald-950 text-white hover:bg-emerald-800'
+            }`}
+          >
+            {isListening ? <MicOff size={12} /> : <Mic size={12} />}
+            {isListening ? 'Escuchando…' : 'Dictar'}
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={naturalText}
+            onChange={(changeEvent) => setNaturalText(changeEvent.target.value)}
+            placeholder="Ej: Hoy vacuné contra aftosa 12 terneros en el potrero norte, lote AR-05"
+            className={inputClassName}
+          />
+          <button
+            type="button"
+            onClick={() => applyNaturalParse(naturalText)}
+            className="shrink-0 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-emerald-500"
+          >
+            Interpretar
+          </button>
+        </div>
+        {parseFeedback && (
+          <p className="mt-2 text-[11px] font-medium text-emerald-800">{parseFeedback}</p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
