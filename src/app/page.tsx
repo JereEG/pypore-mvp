@@ -214,14 +214,6 @@ const TEAM_MEMBERS: TeamMember[] = [
       'Estudiante avanzado de Lic. en Sistemas (FaCENA - UNNE). Desarrollador Backend & AI/ML (Python, FastAPI, PostgreSQL, Computer Vision / YOLO) para pipelines de datos y sistemas inteligentes.',
     linkedinUrl: 'https://www.linkedin.com/in/facundo-n-gonzalez',
   },
-  {
-    name: 'María Guadalupe Lana',
-    role: 'Analista Programadora & Bases de Datos',
-    badge: 'FaCENA · UNNE',
-    description:
-      'Analista Programadora Universitaria y estudiante avanzada de Lic. en Sistemas (FaCENA - UNNE). Desarrollo multi-lenguaje, bases de datos y gestión de la información.',
-    linkedinUrl: 'https://www.linkedin.com/in/mariaguadalupelana',
-  },
 ];
 
 function TickCounterArtwork() {
